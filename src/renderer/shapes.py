@@ -8,14 +8,7 @@ class Point:
         self.z = z
 
     def to_2d(self, camera:"Point", width: float = 400, height: float = 400) -> pygame.math.Vector2|None:
-        """
-        Convert a 3D point to a 2D point in camera space.
-        Returns:
-            list: A list representing a 2D point [x', y'] in camera space.
-                Returns [None, None] if the 3D point is at the camera's position.
-        """
 
-         # Calculate the vector from the 3D point to the camera position.
         current_x = self.x - camera.x
         current_z = self.z - camera.z
         current_y = self.y - camera.y
@@ -23,12 +16,10 @@ class Point:
         if current_z >= 0:
             return None
 
-        # Calculate the magnitude of the vector from the 3D point to the camera.
         vector3D_pointToCam = current_x * current_x + \
             current_y * current_y + current_z * current_z
         vector3D_pointToCam = math.sqrt(vector3D_pointToCam)
 
-        # Check if the 3D point coincides with the camera position.
         if vector3D_pointToCam <= 0:
             return None
 
@@ -44,16 +35,8 @@ class Face:
         self.points = points
 
     def is_face_visible(self, camera: Point) -> bool:
-        # Calculate the normal vector of the face (assuming vertices are in counter-clockwise order).
-        v1 = pygame.math.Vector3(self.points[1].x - self.points[0].x, self.points[1].y - self.points[0].y, self.points[1].z - self.points[0].z)
-        v2 = pygame.math.Vector3(self.points[2].x - self.points[0].x, self.points[2].y - self.points[0].y, self.points[2].z - self.points[0].z)
-        normal = v1.cross(v2)
+        return True
 
-        # Vector from one of the face vertices to the camera.
-        to_camera = pygame.math.Vector3(self.points[0].x - camera.x, self.points[0].y - camera.y, self.points[0].z - camera.z)
-
-        # Check if the face is visible (dot product is negative).
-        return normal.dot(to_camera) < 0
     
     def moyenne_x(self) -> float:
         return sum(point.x for point in self.points) / len(self.points)
