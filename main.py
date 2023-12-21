@@ -1,6 +1,5 @@
 # fait par Corentin SOLOIS
 
-from ast import Tuple
 import math
 import pygame
 
