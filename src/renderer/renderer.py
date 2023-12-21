@@ -1,7 +1,7 @@
 """The file that regroupe all renderer features"""
 
-import math
 import pygame
+from renderer.shapes import Point, Square, Shape, Triangle
 
 
 class Renderer:
@@ -13,12 +13,31 @@ class Renderer:
 
         self.width, self.height = width, height
         self.window = pygame.display.set_mode((self.width, self.height))
+        self.clock = pygame.time.Clock()
+
         self.run = True
+
+        self.shapes : list[Shape] = []
+
+    # Fonction to add formes
+    def new_square(self, x: float = 0, y: float = 0, z: float = 0, width: float = 1, height: float = 1, size: float = 1) -> None:  
+        square = Square(Point(x, y, z), width, height, size)
+        self.shapes.append(square)
+
+    def new_triangle(self, x: float = 0, y: float = 0, z: float = 0, width: float = 1, height: float = 1, size: float = 1) -> None:
+        triangle = Triangle(Point(x, y, z), width, height, size)
+        self.shapes.append(triangle)
 
     def update(self):
         self.update_movement()
+        self.draw()
+        pygame.display.update()
+        self.clock.tick(30)
 
-        print(self.camera.get_pos())
+    def draw(self):
+        self.window.fill((0, 255, 255))
+        for shape in self.shapes:
+            shape.draw(self.window, self.camera)
 
     def update_movement(self):
         """
@@ -47,45 +66,6 @@ class Renderer:
                 if event.type == pygame.QUIT:
                     self.run = False
 
-
-class Point:
-    def __init__(self, x: float = 0, y: float = 0, z: float = 0) -> None:
-        self.x = x
-        self.y = y
-        self.z = z
-
-    def to_2d(self, camera:"Camera") -> tuple[float, float]:
-        """
-        Convert a 3D point to a 2D point in camera space.
-        Returns:
-            list: A list representing a 2D point [x', y'] in camera space.
-                Returns [None, None] if the 3D point is at the camera's position.
-        """
-
-         # Calculate the vector from the 3D point to the camera position.
-        current_x = self.x - camera.x
-        current_z = self.z - camera.z
-        current_y = self.y - camera.y
-
-        if current_z >= 0:
-            return [None, None]
-
-        # Calculate the magnitude of the vector from the 3D point to the camera.
-        vector3D_pointToCam = current_x * current_x + \
-            current_y * current_y + current_z * current_z
-        vector3D_pointToCam = math.sqrt(vector3D_pointToCam)
-
-        # Check if the 3D point coincides with the camera position.
-        if vector3D_pointToCam <= 0:
-            return [None, None]
-
-        # Calculate the 2D coordinates (x', y') in camera space.
-        new_x = current_x / vector3D_pointToCam
-        new_y = current_y / vector3D_pointToCam
-
-        return (new_x, new_y)
-
-
 class Camera(Point):
     def __init__(self, x: float = 0, y: float = 0, z: float = 0) -> None:
         self.x = x
@@ -97,20 +77,20 @@ class Camera(Point):
 
     # Fonctions to move the camera
     def forward(self, velocity: float = 1) -> None:
-        self.x += velocity
+        self.z -= velocity
     
     def backward(self, velocity: float = 1) -> None:
-        self.x -= velocity
+        self.z += velocity
 
     def left(self, velocity: float = 1) -> None:
-        self.y -= velocity
+        self.x -= velocity
 
     def right(self, velocity: float = 1) -> None:
-        self.y += velocity
+        self.x += velocity
 
     def up(self, velocity: float = 1) -> None:
-        self.z -= velocity
+        self.y -= velocity
 
     def down(self, velocity: float = 1) -> None:
-        self.z += velocity
+        self.y += velocity
     
