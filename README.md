@@ -9,7 +9,7 @@ Also I know it is not perfect but if you have any idea please contact me.
 
 ## Usage
 
-in =main you write your code like this:
+in main you write your code like this:
 
 
 ```python
