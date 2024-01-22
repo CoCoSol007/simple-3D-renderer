@@ -1,13 +1,14 @@
 """The file that regroupe all renderer features"""
 
 import pygame
+from renderer.camera import *
 from renderer.shapes import Point, Square, Shape, Triangle
 
 
 class Renderer:
-    def __init__(self, width: float = 400, height: float = 400) -> None:
+    def __init__(self, width: float = 400, height: float = 400,view:"ViewCamera"=1 ) -> None:
 
-        self.camera = Camera(0,0)
+        self.camera = Camera(0,0, view=view)
 
         self.velocity = 0.1
 
@@ -20,7 +21,7 @@ class Renderer:
         self.shapes : list[Shape] = []
 
     # Fonction to add formes
-    def new_square(self, x: float = 0, y: float = 0, z: float = 0, width: float = 1, height: float = 1, size: float = 1) -> None:  
+    def new_square(self, x: float = 0, y: float = 0, z: float = 0, width: float = 1, height: float = 1, size: float = 1) -> None:
         square = Square(Point(x, y, z), width, height, size)
         self.shapes.append(square)
 
@@ -66,31 +67,3 @@ class Renderer:
                 if event.type == pygame.QUIT:
                     self.run = False
 
-class Camera(Point):
-    def __init__(self, x: float = 0, y: float = 0, z: float = 0) -> None:
-        self.x = x
-        self.y = y
-        self.z = z
-
-    def get_pos(self) -> tuple[float, float, float]:
-        return (self.x, self.y, self.z)
-
-    # Fonctions to move the camera
-    def forward(self, velocity: float = 1) -> None:
-        self.z -= velocity
-    
-    def backward(self, velocity: float = 1) -> None:
-        self.z += velocity
-
-    def left(self, velocity: float = 1) -> None:
-        self.x -= velocity
-
-    def right(self, velocity: float = 1) -> None:
-        self.x += velocity
-
-    def up(self, velocity: float = 1) -> None:
-        self.y -= velocity
-
-    def down(self, velocity: float = 1) -> None:
-        self.y += velocity
-    

@@ -9,25 +9,23 @@ Also I know it is not perfect but if you have any idea please contact me.
 
 ## Usage
 
-in main you write your code like this:
+in =main you write your code like this:
 
 
 ```python
+"""The main file of the 3D renderer"""
+
+
 # import the renderer module
-from renderer.renderer import Renderer
+from renderer.renderer import Renderer, ViewCamera
 
-# create the window with the size of 400x400
-window = Renderer(400, 400)
+# create the renderer with the size of 400x400 with the view calculed by PYTHAGORE, you can also chose THALES
+renderer = Renderer(400, 400, ViewCamera.PYTHAGORE)
 
-# create a squares 
-window.new_square(0,0 ,-4, 1, 1)
-window.new_square(1,0 ,-4, 1, 1)
+renderer.new_square(1,1,-4, 1, 1, 1)
 
-# create a triangle
-window.new_triangle(-1,0 ,-4, 1, 1, 1)
-
-# launch the window
-window.launch()
+# launch the renderer
+renderer.launch()
 ```
 
 You will be able to use ZQSD (french keyboard) to move the camera and see the result.
