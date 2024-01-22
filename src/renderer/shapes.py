@@ -1,33 +1,54 @@
 import math
 import pygame
 
+from renderer.camera import *
+
 class Point:
-    def __init__(self, x: float = 0, y: float = 0, z: float = 0) -> None:
+    def __init__(self, x: float = 0, y: float = 0, z: float = 0,  fov: float = 1) -> None:
         self.x = x
         self.y = y
         self.z = z
 
-    def to_2d(self, camera:"Point", width: float = 400, height: float = 400) -> pygame.math.Vector2|None:
+        self.fov = fov
 
-        current_x = self.x - camera.x
-        current_z = self.z - camera.z
-        current_y = self.y - camera.y
 
-        if current_z >= 0:
-            return None
+    def to_2d(self, camera:Camera, width: float = 400, height: float = 400) -> pygame.math.Vector2|None:
+        if camera.view == ViewCamera.THALES:
+            fov = -camera.fov
 
-        vector3D_pointToCam = current_x * current_x + \
-            current_y * current_y + current_z * current_z
-        vector3D_pointToCam = math.sqrt(vector3D_pointToCam)
+            current_x = self.x - camera.x
+            current_z = self.z - camera.z
+            current_y = self.y - camera.y
 
-        if vector3D_pointToCam <= 0:
-            return None
+            if current_z >= 0:
+                return None
 
-        # Calculate the 2D coordinates (x', y') in camera space.
-        new_x = current_x / vector3D_pointToCam
-        new_y = current_y / vector3D_pointToCam
+            new_x = current_x * fov / current_z
+            new_y = current_y * fov / current_z
 
-        return pygame.math.Vector2(new_x * 500 + width / 2 , new_y * 500 + height / 2)
+            return pygame.math.Vector2(new_x * 500 + width / 2 , new_y * 500 + height / 2) 
+
+        elif camera.view == ViewCamera.PYTHAGORE:   
+
+            current_x = self.x - camera.x
+            current_z = self.z - camera.z
+            current_y = self.y - camera.y
+
+            if current_z >= 0:
+                return None
+
+            vector3D_pointToCam = current_x * current_x + \
+                current_y * current_y + current_z * current_z
+            vector3D_pointToCam = math.sqrt(vector3D_pointToCam)
+
+            if vector3D_pointToCam <= 0:
+                return None
+
+            # Calculate the 2D coordinates (x', y') in camera space.
+            new_x = current_x / vector3D_pointToCam
+            new_y = current_y / vector3D_pointToCam
+
+            return pygame.math.Vector2(new_x * 500 + width / 2 , new_y * 500 + height / 2)
 
 
 class Face:
@@ -37,13 +58,13 @@ class Face:
     def is_face_visible(self, camera: Point) -> bool:
         return True
 
-    
+
     def moyenne_x(self) -> float:
         return sum(point.x for point in self.points) / len(self.points)
-    
+
     def moyenne_y(self) -> float:
         return sum(point.y for point in self.points) / len(self.points)
-    
+
     def moyenne_z(self) -> float:
         return sum(point.z for point in self.points) / len(self.points)
 
@@ -54,8 +75,8 @@ class Face:
             (self.moyenne_y() - camera.y) ** 2 +
             (self.moyenne_z() - camera.z) ** 2
         )
-    
-        
+
+
 
     def color_from_distance(self, distance: float) -> tuple:
 
@@ -63,12 +84,12 @@ class Face:
             return 1 / (1 + math.exp(-x * scale))
 
         midpoint = 500.0
-        scaling_factor = 1 
+        scaling_factor = 1
 
         t = sigmoid( (distance - midpoint), scaling_factor)
 
         min_distance = 0.0
-        max_distance = 100.0 
+        max_distance = 100.0
 
         t = max(0, min((distance - min_distance) / (max_distance - min_distance), 1))
 
@@ -128,7 +149,7 @@ class Square(Shape):
             Face([list_of_points[3], list_of_points[0], list_of_points[4], list_of_points[7]]),
         ]
         return list_of_faces
-    
+
 
 class Triangle(Shape):
     def __init__(self, point: Point = Point(0, 0, 0), width: float = 1, height: float = 1, size: float = 1) -> None:
