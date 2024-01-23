@@ -7,9 +7,9 @@ It's a simple 3d rederer made with pygame and math
 This project was a copy of an old project that I made in 2021 in 2 hours without internet.
 Also I know it is not perfect but if you have any idea please contact me.
 
-## View calcul mod
+## View calcul mode
 
-There are 2 type of calcul mod : 
+There are 2 type of calcul mode : 
 - PYTHAGORE (using pythagorean theorem)
 - THALES (using thales's theorem) (my favorite
 
