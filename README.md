@@ -1,19 +1,19 @@
-# simple-3d-renderer
-It's a simple 3d rederer made with pygame and math
+# Simple 3D Renderer
+
+This is a basic 3D renderer created using Pygame and math.
 
 
 ## Origin
 
-This project was a copy of an old project that I made in 2021 in 2 hours without internet.
-Also I know it is not perfect but if you have any idea please contact me.
+This project is a revised version of an earlier project I created in 2021. It was completed in just two hours without the use of the internet. If you have any ideas, please contact me.
 
-## View calcul mode
+## Calcul mode
 
-There are 2 type of calcul mode : 
+The view has two modes:
 - PYTHAGORE (using pythagorean theorem)
-- THALES (using thales's theorem) (my favorite
+- THALES (using thales's theorem) (my favorite)
 
-to create a rendering with a specific mode you can write that:
+To create a rendering with a specific mode, use the following syntax:
 ```python
 # init with PYTHAGORE view
 renderer = Renderer(400, 400, ViewCamera.PYTHAGORE)
@@ -44,8 +44,7 @@ renderer.new_triangle(1,0,-4, 1, 1, 1)
 renderer.launch()
 ```
 
-You will be able to use ZQSD (french keyboard) to move the camera and see the result.
-
+You can use ZQSD on a French keyboard to move the camera and view the result.
 
 ```bash
 python main.py
