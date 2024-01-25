@@ -7,7 +7,7 @@ This is a basic 3D renderer created using Pygame and math.
 
 This project is a revised version of an earlier project I created in 2021. It was completed in just two hours without the use of the internet. If you have any ideas, please contact me.
 
-## Calcul mode
+## Calculation mode 
 
 The view has two modes:
 - PYTHAGORE (using pythagorean theorem)
@@ -24,7 +24,7 @@ renderer = Renderer(400, 400, ViewCamera.THALES)
 
 ## Usage
 
-in src/main.py you write your code like this:
+In src/main.py you write your code like this:
 
 
 ```python
