@@ -55,6 +55,8 @@ class Point:
 
 class Mesh:
     def __init__(self, points: list[Point]) -> None:
+        if len(points) != 3:
+            raise ValueError("Mesh must have 3 points")
         self.points = points
 
     def moyenne_x(self) -> float:
