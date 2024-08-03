@@ -1,12 +1,13 @@
 """The file that regroupe all renderer features"""
 
 import pygame
-from renderer.camera import *
-from renderer.shapes import Point, Square, Shape, Triangle
+from renderer.camera import Camera, ViewCamera
+from renderer.shapes import Point, Mesh
+
 
 
 class Renderer:
-    def __init__(self, width: float = 400, height: float = 400,view:"ViewCamera"=1 ) -> None:
+    def __init__(self, width: float = 400, height: float = 400,view:ViewCamera=1 ) -> None:
 
         self.camera = Camera(0,0, view=view)
 
@@ -18,16 +19,10 @@ class Renderer:
 
         self.run = True
 
-        self.shapes : list[Shape] = []
+        self.meshes : list[Mesh] = []
 
-    # Fonction to add formes
-    def new_square(self, x: float = 0, y: float = 0, z: float = 0, width: float = 1, height: float = 1, size: float = 1) -> None:
-        square = Square(Point(x, y, z), width, height, size)
-        self.shapes.append(square)
-
-    def new_triangle(self, x: float = 0, y: float = 0, z: float = 0, width: float = 1, height: float = 1, size: float = 1) -> None:
-        triangle = Triangle(Point(x, y, z), width, height, size)
-        self.shapes.append(triangle)
+    def new_mesh(self, points: list[tuple[float, float, float]]):
+        self.meshes.append(Mesh([Point(x, y, z) for x, y, z in points]))
 
     def update(self):
         self.update_movement()
@@ -37,8 +32,8 @@ class Renderer:
 
     def draw(self):
         self.window.fill((0, 255, 255))
-        for shape in self.shapes:
-            shape.draw(self.window, self.camera)
+        for mesh in self.meshes:
+            mesh.draw(self.window, self.camera)
 
     def update_movement(self):
         """
