@@ -1,8 +1,7 @@
 import math
 import pygame
-
+import numpy as np
 from renderer.camera import Camera, ViewCamera
-
 class Point:
     def __init__(self, x: float = 0, y: float = 0, z: float = 0,  fov: float = 1) -> None:
         self.x = x
@@ -12,13 +11,20 @@ class Point:
         self.fov = fov
 
 
-    def to_2d(self, camera:Camera, width: float = 400, height: float = 400) -> pygame.math.Vector2|None : 
+    def to_2d(self, camera: "Camera", width: float = 400, height: float = 400) -> pygame.math.Vector2 | None:
+        # Get the view matrix from the camera
+        view_matrix = camera.get_view_matrix()
+
+        # Transform the point using the view matrix
+        point_3d = np.array([self.x, self.y, self.z, 1])
+        transformed_point = view_matrix @ point_3d
+
+        current_x = transformed_point[0]
+        current_y = transformed_point[1]
+        current_z = transformed_point[2]
+
         if camera.view == ViewCamera.THALES:
             fov = -camera.fov
-
-            current_x = self.x - camera.x
-            current_z = self.z - camera.z
-            current_y = self.y - camera.y
 
             if current_z >= 0:
                 return None
@@ -26,13 +32,9 @@ class Point:
             new_x = current_x * fov / current_z
             new_y = current_y * fov / current_z
 
-            return pygame.math.Vector2(new_x * 500 + width / 2 , new_y * 500 + height / 2) 
+            return pygame.math.Vector2(new_x * 500 + width / 2, new_y * 500 + height / 2)
 
-        elif camera.view == ViewCamera.PYTHAGORE:   
-
-            current_x = self.x - camera.x
-            current_z = self.z - camera.z
-            current_y = self.y - camera.y
+        elif camera.view == ViewCamera.PYTHAGORE:
 
             if current_z >= 0:
                 return None
@@ -48,16 +50,12 @@ class Point:
             new_x = current_x / vector3D_pointToCam
             new_y = current_y / vector3D_pointToCam
 
-            return pygame.math.Vector2(new_x * 500 + width / 2 , new_y * 500 + height / 2)
+            return pygame.math.Vector2(new_x * 500 + width / 2, new_y * 500 + height / 2)
 
 
 class Mesh:
     def __init__(self, points: list[Point]) -> None:
         self.points = points
-
-    def is_mesh_visible(self, camera: Point) -> bool:
-        return True
-
 
     def moyenne_x(self) -> float:
         return sum(point.x for point in self.points) / len(self.points)
@@ -68,15 +66,13 @@ class Mesh:
     def moyenne_z(self) -> float:
         return sum(point.z for point in self.points) / len(self.points)
 
-    def distance_to_camera(self, camera: Point) -> float:
+    def distance_to_camera(self, camera: Camera) -> float:
         # Calculate the distance from the first vertex of the mesh to the camera.
         return math.sqrt(
             (self.moyenne_x() - camera.x) ** 2 +
             (self.moyenne_y() - camera.y) ** 2 +
             (self.moyenne_z() - camera.z) ** 2
         )
-
-
 
     def color_from_distance(self, distance: float) -> tuple:
 
@@ -95,12 +91,15 @@ class Mesh:
 
         return (255 * (1-t), 255 * (1-t) , 255 * (1-t))
 
-    def draw(self, window: pygame.Surface, camera: Point) -> None:
-        if self.is_mesh_visible(camera):
+    def draw(self, window: pygame.Surface, camera: Camera) -> None:
             distance = self.distance_to_camera(camera)
             color = self.color_from_distance(distance)
 
             point_list = [point.to_2d(camera, window.get_width(), window.get_height()) for point in self.points]
             if None not in point_list:
-                pygame.draw.polygon(window, color, point_list)
-                pygame.draw.polygon(window, (0, 0, 0), point_list, 1)
+                # Filter out None values from point_list
+                filtered_point_list = [point for point in point_list if point is not None]
+                
+                # Draw the polygon with the filtered point list
+                pygame.draw.polygon(window, color, filtered_point_list)
+                pygame.draw.polygon(window, (0, 0, 0), filtered_point_list, 1)

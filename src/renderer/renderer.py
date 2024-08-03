@@ -7,7 +7,7 @@ from renderer.shapes import Point, Mesh
 
 
 class Renderer:
-    def __init__(self, width: float = 400, height: float = 400,view:ViewCamera=1 ) -> None:
+    def __init__(self, width: float = 400, height: float = 400,view:ViewCamera=ViewCamera.PYTHAGORE ) -> None:
 
         self.camera = Camera(0,0, view=view)
 
@@ -19,12 +19,16 @@ class Renderer:
 
         self.run = True
 
+        pygame.event.set_grab(True)
+        pygame.mouse.set_visible(False) 
+
         self.meshes : list[Mesh] = []
 
     def new_mesh(self, points: list[tuple[float, float, float]]):
         self.meshes.append(Mesh([Point(x, y, z) for x, y, z in points]))
 
     def update(self):
+        self.camera.update_rotation_matrix()
         self.update_movement()
         self.draw()
         pygame.display.update()
@@ -53,6 +57,8 @@ class Renderer:
         if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
             self.camera.down(self.velocity)
 
+        self.camera.rotate_y( pygame.mouse.get_rel()[0] * self.camera.velocity)
+
     def launch(self):
         while self.run:
 
@@ -61,4 +67,8 @@ class Renderer:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.run = False
+                    
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                    self.run = False 
 
+        pygame.quit()
